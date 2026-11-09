@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Умный помощник — офлайн</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#131b30;--panel2:#1b2640;--text:#eef3ff;--muted:#9eacc8;--accent:#8b7cff;--line:#2a3858;--good:#62d6ad}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0%,#20264b 0,transparent 38%),var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+header{max-width:1000px;margin:auto;padding:26px 20px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#9b8cff,#52d7c0);display:grid;place-items:center;color:#10152a;font-size:23px;font-weight:900}
+h1{font-size:20px;margin:0}.sub{color:var(--muted);font-size:13px}.status{font-size:12px;color:var(--good);border:1px solid #285c53;border-radius:99px;padding:6px 10px;white-space:nowrap}
+main{max-width:1000px;margin:0 auto;padding:12px 20px 36px;display:grid;grid-template-columns:1fr 270px;gap:16px}
+.chat,.side{background:rgba(19,27,48,.94);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.chathead{padding:17px 20px;border-bottom:1px solid var(--line);font-weight:700}
+.messages{height:min(58vh,570px);min-height:330px;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+.msg{max-width:88%;padding:12px 15px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere}
+.bot{align-self:flex-start;background:var(--panel2);border:1px solid #2a3858}
+.user{align-self:flex-end;background:#5147a8}
+.meta{font-size:11px;color:var(--muted);margin-bottom:4px}
+.composer{border-top:1px solid var(--line);padding:14px;display:flex;gap:9px}
+textarea{resize:vertical;min-height:48px;max-height:140px;flex:1;background:#0d1426;border:1px solid var(--line);border-radius:13px;color:var(--text);padding:12px;font:inherit;outline:none}
+textarea:focus{border-color:var(--accent)}button{border:0;border-radius:12px;background:var(--accent);color:white;font-weight:700;padding:0 18px;cursor:pointer}button:hover{filter:brightness(1.1)}button:focus-visible,textarea:focus-visible{outline:2px solid white;outline-offset:2px}
+.side{padding:17px;height:max-content}.side h2{font-size:15px;margin:0 0 10px}.hint{color:var(--muted);font-size:13px;margin:0 0 14px}.quick{display:grid;gap:8px}.quick button{background:#202b48;border:1px solid var(--line);text-align:left;padding:10px 12px;font-weight:500;color:var(--text)}
+.note{margin-top:17px;padding:12px;background:#10182b;border-radius:12px;color:var(--muted);font-size:12px}
+.clear{margin-top:12px;background:transparent;border:1px solid var(--line);color:var(--muted);padding:8px 12px;width:100%}
+footer{max-width:1000px;margin:0 auto;padding:0 20px 25px;color:var(--muted);font-size:12px}
+@media(max-width:760px){main{grid-template-columns:1fr}.side{order:-1}.quick{grid-template-columns:1fr 1fr}.messages{height:48vh;min-height:280px}header{padding-top:18px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">✦</div><div><h1>Умный помощник</h1><div class="sub">Учёба, идеи и повседневные вопросы</div></div></div><div class="status">● Работает офлайн</div></header>
+<main>
+<section class="chat">
+ <div class="chathead">Диалог</div>
+ <div class="messages" id="messages" aria-live="polite">
+  <div class="msg bot"><div class="meta">Помощник</div>Привет! Я работаю без интернета. Могу помочь с простыми вычислениями, объяснить базовые темы, предложить идеи и подсказать по общим вопросам о TikTok. Напиши, что нужно сделать.</div>
+ </div>
+ <form class="composer" id="form"><textarea id="prompt" placeholder="Например: реши 25 × 14 или расскажи о причинах Французской революции…" aria-label="Сообщение"></textarea><button type="submit">Отправить</button></form>
+</section>
+<aside class="side">
+ <h2>Попробуй спросить</h2><p class="hint">Нажми на пример, чтобы отправить его в чат.</p>
+ <div class="quick">
+  <button data-q="Реши пример: 125 × 16">🧮 Решить пример</button>
+  <button data-q="Объясни, что такое дроби, простыми словами">📘 Объяснить тему</button>
+  <button data-q="Расскажи о причинах Французской революции">🏛️ История</button>
+  <button data-q="Предложи 5 идей для роликов в TikTok">🎬 Идеи для TikTok</button>
+  <button data-q="Как сделать видео в TikTok интереснее?">✨ Советы для видео</button>
+  <button data-q="Составь план подготовки к контрольной">📝 План учёбы</button>
+ </div>
+ <div class="note"><b>Важно:</b> это автономная демонстрационная версия, а не полноценная нейросеть. Она не подключается к интернету, поэтому не знает свежие новости и не может гарантировать ответы по любой теме. Для сложных вопросов лучше сверять информацию с учебником или надёжным источником.</div>
+ <button class="clear" id="clear">Очистить диалог</button>
+</aside>
+</main>
+<footer>Все действия выполняются в этом браузере. Интернет для работы страницы не требуется.</footer>
+<script>
+const messages=document.getElementById('messages'), input=document.getElementById('prompt');
+function add(text,who){const el=document.createElement('div');el.className='msg '+who;const meta=document.createElement('div');meta.className='meta';meta.textContent=who==='user'?'Ты':'Помощник';const body=document.createElement('div');body.textContent=text;el.append(meta,body);messages.append(el);messages.scrollTop=messages.scrollHeight;}
+function calc(s){
+ const cleaned=s.replace(/,/g,'.').replace(/[×х]/gi,'*').replace(/÷/g,'/').replace(/(\d)\s*%/g,'($1/100)');
+ if(!/^[\d\s.+\-*/()]+$/.test(cleaned)||!/[+\-*/]/.test(cleaned))return null;
+ try{const v=Function('"use strict";return ('+cleaned+')')();if(typeof v==='number'&&Number.isFinite(v))return Number(v.toLocaleString('en-US',{maximumFractionDigits:8}));}catch(e){}return null;
+}
+function answer(q){
+ const s=q.toLowerCase().trim();
+ const mathText=q.replace(/^(реши пример|реши|посчитай|вычисли)\s*[:\-]?\s*/i,'');
+ const result=calc(mathText);
+ if(result!==null)return 'Ответ: '+result+'.\n\nПроверяй порядок действий: сначала скобки, затем умножение и деление, потом сложение и вычитание.';
+ if(/тик ток|tiktok|ролик|видео/.test(s)){
+  if(/иде|тем/.test(s))return 'Идеи для роликов:\n1. Короткий полезный совет.\n2. «Миф или факт?» на интересную тему.\n3. Мини-обзор любимой книги или игры.\n4. Процесс создания чего-либо.\n5. Ответ на частый вопрос подписчиков.\n\nВыбирай безопасную тему и не публикуй личные данные.';
+  return 'Общие советы для короткого видео:\n• Начни с понятной идеи и цепляющей первой фразы.\n• Оставь одну главную мысль.\n• Добавь читаемые субтитры.\n• Проверь звук и качество перед публикацией.\n• Соблюдай правила платформы и береги личную информацию.\n\nЯ работаю офлайн, поэтому не вижу текущие тренды и настройки TikTok.';
+ }
+ if(/французск|революц/.test(s))return 'Французская революция началась в 1789 году. Среди её причин были финансовый кризис государства, неравенство сословий, высокие налоги для третьего сословия, нехватка продовольствия и идеи Просвещения. Она привела к глубоким политическим и общественным переменам во Франции.';
+ if(/дроб/.test(s))return 'Дробь показывает часть целого. Например, 3/4 означает, что целое разделили на 4 равные части и взяли 3. Верхнее число — числитель, нижнее — знаменатель.';
+ if(/план.*контрольн|подготов/.test(s))return 'Пример плана подготовки:\n1. Выпиши темы контрольной.\n2. Раздели их на небольшие части.\n3. Повтори правила и основные понятия.\n4. Реши несколько тренировочных заданий.\n5. Проверь ошибки и повтори сложные места.\n6. Сделай перерыв и выспись.';
+ if(/привет|здравствуй|добрый/.test(s))return 'Привет! Напиши вопрос или задачу — попробую помочь.';
+ if(/кто ты|что ты умеешь/.test(s))return 'Я автономный помощник-демонстрация. Умею решать простые арифметические выражения, объяснять несколько учебных тем, предлагать идеи и составлять простые планы. Для ответов на любые произвольные темы нужна подключённая языковая модель, а эта версия полностью офлайн.';
+ return 'Я пока не знаю готового ответа на этот вопрос в своей офлайн-библиотеке.\n\nПопробуй уточнить вопрос или попросить меня:\n• решить арифметический пример;\n• объяснить дроби;\n• рассказать о Французской революции;\n• предложить идеи для TikTok;\n• составить план учёбы.\n\nДля действительно свободных ответов по любым темам понадобится языковая модель; без интернета её нужно отдельно установить на устройство.';
+}
+function send(q){q=q.trim();if(!q)return;add(q,'user');input.value='';setTimeout(()=>add(answer(q),'bot'),120);}
+document.getElementById('form').addEventListener('submit',e=>{e.preventDefault();send(input.value);});
+document.querySelectorAll('[data-q]').forEach(b=>b.addEventListener('click',()=>send(b.dataset.q)));
+document.getElementById('clear').addEventListener('click',()=>{messages.innerHTML='';add('Диалог очищен. Чем займёмся?','bot');});
+</script>
+</body></html>
